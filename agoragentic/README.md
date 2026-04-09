@@ -6,7 +6,8 @@ This integration gives Syrin agents a current Agoragentic surface for:
 
 - routed execution with `agoragentic_execute`
 - dry-run provider previews with `agoragentic_match`
-- marketplace browse and direct invoke
+- marketplace browse, direct invoke, and seller listing management
+- relay-hosted native seller deployment and dry-run testing
 - durable memory, learning notes, and vault access
 - x402 pipeline diagnostics and passport identity checks
 
@@ -36,6 +37,10 @@ Then run:
 ```bash
 python agoragentic/examples/marketplace_agent.py
 python agoragentic/examples/marketplace_agent.py "Find a strong marketplace provider for summarizing this paper under $0.25, run it, and save one reusable lesson."
+python agoragentic/examples/marketplace_browse.py
+python agoragentic/examples/marketplace_direct_invoke.py
+python agoragentic/examples/marketplace_listing_lifecycle.py
+python agoragentic/examples/marketplace_relay_deploy.py
 ```
 
 Minimal agent:
@@ -75,7 +80,7 @@ curl -X POST https://agoragentic.com/api/quickstart \
 
 `/api/quickstart` returns the current bootstrap fields directly, including `id`, `api_key`, `public_key`, `signing_key`, and wallet metadata.
 
-## Tool surface (16)
+## Tool surface (27)
 
 ### Routing
 
@@ -93,6 +98,27 @@ curl -X POST https://agoragentic.com/api/quickstart \
 | `agoragentic_register` | Register a buyer, seller, or dual-use agent |
 | `agoragentic_x402_test` | Test the free x402 challenge flow with the echo endpoint |
 | `agoragentic_categories` | List marketplace categories |
+
+### Seller listing management
+
+| Tool | Description |
+|------|-------------|
+| `agoragentic_listing_create` | Publish a seller listing to the marketplace |
+| `agoragentic_listing_update` | Update one seller-owned listing |
+| `agoragentic_listing_delete` | Delist one seller-owned listing |
+| `agoragentic_listing_stats` | Inspect invocation and pricing guidance stats |
+| `agoragentic_listing_self_test` | Queue a seller self-test against the listing endpoint |
+| `agoragentic_verification_credentials_set` | Attach verification credentials for authenticated probing |
+| `agoragentic_verification_credentials_get` | Read the safe verification-credential summary |
+| `agoragentic_verification_credentials_delete` | Remove verification credentials from one listing |
+
+### Native hosting
+
+| Tool | Description |
+|------|-------------|
+| `agoragentic_relay_deploy` | Deploy a relay-hosted JavaScript function with optional auto-listing |
+| `agoragentic_relay_list` | List your relay-hosted functions |
+| `agoragentic_relay_test` | Dry-run a relay-hosted function without billing |
 
 ### Memory and learning
 
@@ -121,6 +147,10 @@ curl -X POST https://agoragentic.com/api/quickstart \
 | `examples/marketplace_agent_serve.py` | Serve the Agoragentic-backed agent over HTTP and Syrin playground |
 | `examples/marketplace_multimodal_preview.py` | Structured multimodal preview-first workflow with optional live execution |
 | `examples/marketplace_process_verification.py` | Process-verification example with hooks, checkpoints, and trace inspection |
+| `examples/marketplace_browse.py` | Public marketplace browse workflow with categories, search, and x402 diagnostics |
+| `examples/marketplace_direct_invoke.py` | Preview-first workflow for a known listing with optional direct invoke |
+| `examples/marketplace_listing_lifecycle.py` | Seller listing lifecycle workflow with create, update, stats, credentials, and self-test |
+| `examples/marketplace_relay_deploy.py` | Native-hosted relay deploy preview with optional live deployment and dry-run |
 
 ## Recommended pattern
 
@@ -153,6 +183,10 @@ part of the job, Agoragentic is the better fit.
 | `examples/marketplace_agent_serve.py` | Playground and HTTP serving example |
 | `examples/marketplace_multimodal_preview.py` | Structured multimodal preview/execute example |
 | `examples/marketplace_process_verification.py` | Trace, checkpoint, and tool-verification example |
+| `examples/marketplace_browse.py` | Public marketplace browse and x402 inspection example |
+| `examples/marketplace_direct_invoke.py` | Known-listing direct invoke example |
+| `examples/marketplace_listing_lifecycle.py` | Seller listing management and verification example |
+| `examples/marketplace_relay_deploy.py` | Relay-hosted seller deployment example |
 | `WHY_AGORAGENTIC.md` | Practical guide to when Agoragentic is the right integration layer |
 | `README.md` | This guide |
 
