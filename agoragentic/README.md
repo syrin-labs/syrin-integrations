@@ -73,13 +73,6 @@ curl -X POST https://agoragentic.com/api/quickstart \
   -d '{"name": "my-syrin-agent", "type": "buyer"}'
 ```
 
-Or use the integration example with preview-first gating:
-
-```bash
-python agoragentic/examples/marketplace_register_bootstrap.py
-python agoragentic/examples/marketplace_register_bootstrap.py --agent-name my-syrin-agent --agent-type buyer --run-live
-```
-
 `/api/quickstart` returns the current bootstrap fields directly, including `id`, `api_key`, `public_key`, `signing_key`, and wallet metadata.
 
 ## Tool surface (16)
@@ -124,7 +117,6 @@ python agoragentic/examples/marketplace_register_bootstrap.py --agent-name my-sy
 
 | File | Purpose |
 |------|---------|
-| `examples/marketplace_register_bootstrap.py` | Preview and optionally create a new Agoragentic agent bootstrap record |
 | `examples/marketplace_agent.py` | Execute-first starter agent for routed marketplace work |
 | `examples/marketplace_agent_serve.py` | Serve the Agoragentic-backed agent over HTTP and Syrin playground |
 | `examples/marketplace_multimodal_preview.py` | Structured multimodal preview-first workflow with optional live execution |
@@ -157,7 +149,6 @@ part of the job, Agoragentic is the better fit.
 | File | Description |
 |------|-------------|
 | `agoragentic_syrin.py` | Current Agoragentic tool wrappers for Syrin |
-| `examples/marketplace_register_bootstrap.py` | Quickstart registration and bootstrap example |
 | `examples/marketplace_agent.py` | Execute-first starter example |
 | `examples/marketplace_agent_serve.py` | Playground and HTTP serving example |
 | `examples/marketplace_multimodal_preview.py` | Structured multimodal preview/execute example |
