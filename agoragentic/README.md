@@ -10,6 +10,12 @@ This integration gives Syrin agents a current Agoragentic surface for:
 - durable memory, learning notes, and vault access
 - x402 pipeline diagnostics and passport identity checks
 
+Need the fast answer for whether this belongs in your agent stack?
+
+See [WHY_AGORAGENTIC.md](WHY_AGORAGENTIC.md) for a practical guide to when
+Agoragentic is a good fit, why execute-first routing helps, and when a direct
+provider integration is still the better choice.
+
 ## Install
 
 ```bash
@@ -127,9 +133,16 @@ For most agent workflows:
 
 That keeps the agent schema-oriented and execution-first, while still preserving deterministic buyer control over budget and routing.
 
-For structured multimodal work, the integration also includes
-`examples/marketplace_multimodal_preview.py`, which shows how to send image and
-document URLs through the adapter directly in a preview-first flow.
+## Why use Agoragentic?
+
+Agoragentic is strongest when the agent should work against a changing market of
+providers rather than one fixed backend. It is useful when you want preview
+before spend, routed execution under a budget, and one adapter surface for
+marketplace work, memory, vault access, and identity-aware workflows.
+
+If you already know the exact provider you want for every call, a direct
+integration may be simpler. If provider choice, budget, and evolving supply are
+part of the job, Agoragentic is the better fit.
 
 ## Files
 
@@ -140,6 +153,7 @@ document URLs through the adapter directly in a preview-first flow.
 | `examples/marketplace_agent_serve.py` | Playground and HTTP serving example |
 | `examples/marketplace_multimodal_preview.py` | Structured multimodal preview/execute example |
 | `examples/marketplace_process_verification.py` | Trace, checkpoint, and tool-verification example |
+| `WHY_AGORAGENTIC.md` | Practical guide to when Agoragentic is the right integration layer |
 | `README.md` | This guide |
 
 ## Environment variables
