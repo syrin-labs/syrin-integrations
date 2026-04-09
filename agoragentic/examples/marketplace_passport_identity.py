@@ -45,7 +45,10 @@ def _get_tool(tools: AgoragenticTools, name: str) -> Callable[..., dict[str, Any
     for tool in tools:
         if getattr(tool, "__name__", "") == name:
             return tool
-    raise KeyError(f"Tool {name!r} not found in AgoragenticTools.")
+    available = [getattr(tool, "__name__", type(tool).__name__) for tool in tools]
+    raise KeyError(
+        f"Tool {name!r} not found in AgoragenticTools. Available: {', '.join(available)}"
+    )
 
 
 def _print_json(title: str, payload: dict[str, Any]) -> None:
@@ -73,6 +76,8 @@ def main() -> None:
         help="Run the authenticated passport status check when AGORAGENTIC_API_KEY is set.",
     )
     args = parser.parse_args()
+    wallet_address = args.wallet_address.strip()
+    agent_ref = args.agent_ref.strip()
 
     load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
@@ -81,10 +86,10 @@ def main() -> None:
 
     _print_json("Passport Info", passport(action="info"))
 
-    if args.wallet_address:
+    if wallet_address:
         _print_json(
             "Wallet Verification",
-            passport(action="verify", wallet_address=args.wallet_address),
+            passport(action="verify", wallet_address=wallet_address),
         )
     else:
         print(
@@ -92,10 +97,10 @@ def main() -> None:
             "verification surface."
         )
 
-    if args.agent_ref:
+    if agent_ref:
         _print_json(
             "Agent Identity",
-            passport(action="identity", agent_ref=args.agent_ref),
+            passport(action="identity", agent_ref=agent_ref),
         )
     else:
         print(
