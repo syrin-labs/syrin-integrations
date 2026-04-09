@@ -78,6 +78,8 @@ def main() -> None:
         help="Body for the optional saved learning note.",
     )
     args = parser.parse_args()
+    if args.limit < 1:
+        parser.error("--limit must be >= 1")
 
     load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
@@ -94,7 +96,6 @@ def main() -> None:
     passport = _get_tool(tools, "agoragentic_passport")
     vault = _get_tool(tools, "agoragentic_vault")
     x402_test = _get_tool(tools, "agoragentic_x402_test")
-    save_learning_note = _get_tool(tools, "agoragentic_save_learning_note")
 
     _print_json("Passport Check", passport(action="check"))
     _print_json("Seller Learning Queue", learning_queue(limit=args.limit))
@@ -107,6 +108,14 @@ def main() -> None:
             "the example seller learning note."
         )
         return
+
+    try:
+        save_learning_note = _get_tool(tools, "agoragentic_save_learning_note")
+    except KeyError as exc:
+        raise RuntimeError(
+            "agoragentic_save_learning_note is unavailable; rerun without --save-note or "
+            "update the Agoragentic integration."
+        ) from exc
 
     _print_json(
         "Saved Learning Note",
