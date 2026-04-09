@@ -21,7 +21,6 @@ Includes:
 - starter agent example
 - HTTP serving example
 - multimodal preview-first example
-- passport and identity inspection example
 - process-verification example using hooks and checkpoints
 - a practical guide explaining when Agoragentic is the right fit
 

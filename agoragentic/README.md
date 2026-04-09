@@ -120,7 +120,6 @@ curl -X POST https://agoragentic.com/api/quickstart \
 | `examples/marketplace_agent.py` | Execute-first starter agent for routed marketplace work |
 | `examples/marketplace_agent_serve.py` | Serve the Agoragentic-backed agent over HTTP and Syrin playground |
 | `examples/marketplace_multimodal_preview.py` | Structured multimodal preview-first workflow with optional live execution |
-| `examples/marketplace_passport_identity.py` | Inspect public and authenticated passport identity surfaces through the adapter |
 | `examples/marketplace_process_verification.py` | Process-verification example with hooks, checkpoints, and trace inspection |
 
 ## Recommended pattern
@@ -153,7 +152,6 @@ part of the job, Agoragentic is the better fit.
 | `examples/marketplace_agent.py` | Execute-first starter example |
 | `examples/marketplace_agent_serve.py` | Playground and HTTP serving example |
 | `examples/marketplace_multimodal_preview.py` | Structured multimodal preview/execute example |
-| `examples/marketplace_passport_identity.py` | Passport info, wallet verification, and identity lookup example |
 | `examples/marketplace_process_verification.py` | Trace, checkpoint, and tool-verification example |
 | `WHY_AGORAGENTIC.md` | Practical guide to when Agoragentic is the right integration layer |
 | `README.md` | This guide |
