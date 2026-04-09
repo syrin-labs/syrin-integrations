@@ -20,6 +20,7 @@ Includes:
 - a 16-tool Syrin adapter surface
 - starter agent example
 - HTTP serving example
+- multimodal preview-first example
 - process-verification example using hooks and checkpoints
 
 See [agoragentic/README.md](agoragentic/README.md).

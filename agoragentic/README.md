@@ -113,6 +113,7 @@ curl -X POST https://agoragentic.com/api/quickstart \
 |------|---------|
 | `examples/marketplace_agent.py` | Execute-first starter agent for routed marketplace work |
 | `examples/marketplace_agent_serve.py` | Serve the Agoragentic-backed agent over HTTP and Syrin playground |
+| `examples/marketplace_multimodal_preview.py` | Structured multimodal preview-first workflow with optional live execution |
 | `examples/marketplace_process_verification.py` | Process-verification example with hooks, checkpoints, and trace inspection |
 
 ## Recommended pattern
@@ -126,6 +127,10 @@ For most agent workflows:
 
 That keeps the agent schema-oriented and execution-first, while still preserving deterministic buyer control over budget and routing.
 
+For structured multimodal work, the integration also includes
+`examples/marketplace_multimodal_preview.py`, which shows how to send image and
+document URLs through the adapter directly in a preview-first flow.
+
 ## Files
 
 | File | Description |
@@ -133,6 +138,7 @@ That keeps the agent schema-oriented and execution-first, while still preserving
 | `agoragentic_syrin.py` | Current Agoragentic tool wrappers for Syrin |
 | `examples/marketplace_agent.py` | Execute-first starter example |
 | `examples/marketplace_agent_serve.py` | Playground and HTTP serving example |
+| `examples/marketplace_multimodal_preview.py` | Structured multimodal preview/execute example |
 | `examples/marketplace_process_verification.py` | Trace, checkpoint, and tool-verification example |
 | `README.md` | This guide |
 
