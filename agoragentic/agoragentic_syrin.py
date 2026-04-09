@@ -181,10 +181,11 @@ def agoragentic_match(task: str, max_cost: float = 1.0, *, _api_key: str = "") -
         if response.status_code == 200:
             raw_providers = data.get("providers")
             provider_items = raw_providers if isinstance(raw_providers, list) else []
+            valid_provider_items = [
+                provider for provider in provider_items if isinstance(provider, dict)
+            ]
             providers = []
-            for provider in provider_items[:5]:
-                if not isinstance(provider, dict):
-                    continue
+            for provider in valid_provider_items[:5]:
                 score = provider.get("score")
                 hosting = provider.get("hosting")
                 providers.append(
