@@ -155,7 +155,10 @@ class AgoragenticIntegrationTests(unittest.TestCase):
         )
 
         tools = integration.AgoragenticTools(api_key="bound-key")
-        result = tools[0]("Summarize this")
+        execute_tool = next(
+            tool for tool in tools if tool.__name__ == "agoragentic_execute"
+        )
+        result = execute_tool("Summarize this")
 
         self.assertEqual(len(tools), 16)
         self.assertEqual(result["provider"], "alpha")
