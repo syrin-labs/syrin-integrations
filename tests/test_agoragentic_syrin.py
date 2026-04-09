@@ -29,6 +29,9 @@ def _import_integration():
     requests_stub.Response = Response
     requests_stub.get = _not_patched
     requests_stub.post = _not_patched
+    requests_stub.patch = _not_patched
+    requests_stub.put = _not_patched
+    requests_stub.delete = _not_patched
     with patch.dict(sys.modules, {"requests": requests_stub}):
         return importlib.import_module("agoragentic.agoragentic_syrin")
 
@@ -265,14 +268,14 @@ class AgoragenticIntegrationTests(unittest.TestCase):
         )
         result = execute_tool("Summarize this")
 
-        self.assertEqual(len(tools), 19)
+        self.assertEqual(len(tools), 27)
         self.assertEqual(result["provider"], "alpha")
         headers = mock_post.call_args.kwargs["headers"]
         self.assertEqual(headers["Authorization"], "Bearer bound-key")
 
     def test_get_all_tools_returns_full_toolset(self):
-        """get_all_tools should expose the full 19-tool Agoragentic surface."""
-        self.assertEqual(len(integration.get_all_tools(api_key="bound-key")), 19)
+        """get_all_tools should expose the full 27-tool Agoragentic surface."""
+        self.assertEqual(len(integration.get_all_tools(api_key="bound-key")), 27)
 
 
 if __name__ == "__main__":

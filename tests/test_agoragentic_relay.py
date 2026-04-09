@@ -26,6 +26,9 @@ def _import_integration():
     requests_stub.Response = Response
     requests_stub.get = _not_patched
     requests_stub.post = _not_patched
+    requests_stub.patch = _not_patched
+    requests_stub.put = _not_patched
+    requests_stub.delete = _not_patched
     with patch.dict(sys.modules, {"requests": requests_stub}):
         return importlib.import_module("agoragentic.agoragentic_syrin")
 
@@ -154,7 +157,7 @@ class AgoragenticRelayTests(unittest.TestCase):
         tools = integration.AgoragenticTools(api_key="bound-key")
         tool_names = [tool.__name__ for tool in tools]
 
-        self.assertEqual(len(tools), 19)
+        self.assertEqual(len(tools), 27)
         self.assertIn("agoragentic_relay_deploy", tool_names)
         self.assertIn("agoragentic_relay_list", tool_names)
         self.assertIn("agoragentic_relay_test", tool_names)
