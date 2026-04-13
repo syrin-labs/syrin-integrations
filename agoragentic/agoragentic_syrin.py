@@ -1,9 +1,9 @@
 """
-Agoragentic x Syrin Integration — v1.2
+Agoragentic x Syrin Integration — v1.3
 ======================================
 
 Agoragentic marketplace tools for Syrin agents.
-Route tasks, preview providers, manage durable memory, inspect seller learning
+Route tasks, preview providers, manage listings, inspect seller learning
 signals, verify x402 compatibility, and check identity surfaces without leaving
 the Syrin runtime.
 
@@ -222,7 +222,9 @@ def agoragentic_match(task: str, max_cost: float = 1.0, *, _api_key: str = "") -
 def agoragentic_search(
     query: str = "",
     category: str = "",
+    seller: str = "",
     max_price: float = -1,
+    limit: int = 10,
     *,
     _api_key: str = ""
 ) -> Dict[str, Any]:
@@ -231,17 +233,21 @@ def agoragentic_search(
     Args:
         query: Search term.
         category: Optional category slug filter.
+        seller: Optional seller ID, seller name, or agent:// alias.
         max_price: Maximum listing price in USDC. Use -1 for no cap.
+        limit: Maximum number of browse results to return.
 
     Returns:
         dict with normalized capability browse results.
     """
     try:
-        params = {"limit": 10}
+        params = {"limit": _safe_limit(limit, default=10, max_limit=50)}
         if query:
             params["search"] = query
         if category:
             params["category"] = category
+        if seller:
+            params["seller"] = seller
         response = requests.get(
             _build_url("/api/capabilities"),
             params=params,
@@ -423,6 +429,251 @@ def agoragentic_categories() -> Dict[str, Any]:
                 for category in data.get("categories", [])
             ]
             return {"total": data.get("total", len(categories)), "categories": categories}
+        return _error_payload(response, data)
+    except Exception as exc:
+        return {"error": str(exc)}
+
+
+def agoragentic_listing_create(
+    name: str,
+    description: str,
+    category: str,
+    endpoint_url: str,
+    price_per_unit: float = 0.10,
+    tags: Any = "",
+    input_schema: Optional[Dict[str, Any]] = None,
+    output_schema: Optional[Dict[str, Any]] = None,
+    listing_type: str = "service",
+    long_description: str = "",
+    *,
+    _api_key: str = ""
+) -> Dict[str, Any]:
+    """Publish a seller listing to the Agoragentic marketplace."""
+    api_key = _require_key(_api_key)
+    payload = {
+        "name": name,
+        "description": description,
+        "long_description": long_description,
+        "category": category,
+        "listing_type": listing_type,
+        "price_per_unit": price_per_unit,
+        "endpoint_url": endpoint_url,
+        "tags": _normalize_tags(tags),
+        "input_schema": input_schema or {},
+        "output_schema": output_schema or {},
+    }
+    try:
+        response = requests.post(
+            _build_url("/api/capabilities"),
+            json=payload,
+            headers=_headers(api_key),
+            timeout=30,
+        )
+        data = _safe_json(response)
+        if response.status_code == 201:
+            return {
+                "status": "created",
+                "listing_id": data.get("id"),
+                "slug": data.get("slug"),
+                "review_status": data.get("review_status"),
+                "message": data.get("message"),
+                "endpoint_preflight_warning": data.get("endpoint_preflight_warning"),
+                "nft_configuration_warning": data.get("nft_configuration_warning"),
+                "name_collision_warning": data.get("name_collision_warning"),
+                "links": data.get("_links"),
+            }
+        return _error_payload(response, data)
+    except Exception as exc:
+        return {"error": str(exc)}
+
+
+def agoragentic_listing_update(
+    listing_id: str,
+    changes: Optional[Dict[str, Any]] = None,
+    *,
+    _api_key: str = ""
+) -> Dict[str, Any]:
+    """Update a seller listing with one or more changed fields."""
+    api_key = _require_key(_api_key)
+    try:
+        response = requests.patch(
+            _build_url(f"/api/capabilities/{listing_id}"),
+            json=_normalize_input_data(changes),
+            headers=_headers(api_key),
+            timeout=30,
+        )
+        data = _safe_json(response)
+        if response.status_code == 200:
+            return {
+                "status": "updated",
+                "message": data.get("message"),
+                "review_status": data.get("review_status"),
+                "re_review_required": data.get("re_review_required"),
+                "changed_fields": data.get("changed_fields"),
+                "endpoint_preflight_warning": data.get("endpoint_preflight_warning"),
+                "nft_configuration_warning": data.get("nft_configuration_warning"),
+            }
+        return _error_payload(response, data)
+    except Exception as exc:
+        return {"error": str(exc)}
+
+
+def agoragentic_listing_delete(listing_id: str, *, _api_key: str = "") -> Dict[str, Any]:
+    """Delist one seller-owned marketplace listing."""
+    api_key = _require_key(_api_key)
+    try:
+        response = requests.delete(
+            _build_url(f"/api/capabilities/{listing_id}"),
+            headers=_headers(api_key),
+            timeout=30,
+        )
+        data = _safe_json(response)
+        if response.status_code == 200:
+            return {
+                "status": "deleted",
+                "message": data.get("message"),
+            }
+        return _error_payload(response, data)
+    except Exception as exc:
+        return {"error": str(exc)}
+
+
+def agoragentic_listing_stats(listing_id: str, *, _api_key: str = "") -> Dict[str, Any]:
+    """Read invocation and pricing guidance stats for one listing."""
+    api_key = _require_key(_api_key)
+    try:
+        response = requests.get(
+            _build_url(f"/api/capabilities/{listing_id}/stats"),
+            headers=_headers(api_key),
+            timeout=DEFAULT_TIMEOUT,
+        )
+        data = _safe_json(response)
+        if response.status_code == 200:
+            return {
+                "total_invocations": data.get("total_invocations"),
+                "successes": data.get("successes"),
+                "failures": data.get("failures"),
+                "timeouts": data.get("timeouts"),
+                "avg_latency_ms": data.get("avg_latency_ms"),
+                "total_revenue": data.get("total_revenue"),
+                "total_platform_fees": data.get("total_platform_fees"),
+                "recent_30d": data.get("recent_30d"),
+                "pricing_suggestion": data.get("pricing_suggestion"),
+            }
+        return _error_payload(response, data)
+    except Exception as exc:
+        return {"error": str(exc)}
+
+
+def agoragentic_listing_self_test(
+    listing_id: str,
+    test_input: Optional[Dict[str, Any]] = None,
+    timeout_ms: int = 15000,
+    *,
+    _api_key: str = ""
+) -> Dict[str, Any]:
+    """Queue a seller self-test for one listing endpoint."""
+    api_key = _require_key(_api_key)
+    try:
+        response = requests.post(
+            _build_url(f"/api/capabilities/{listing_id}/self-test"),
+            json={
+                "test_input": _normalize_input_data(test_input),
+                "timeout_ms": timeout_ms,
+            },
+            headers=_headers(api_key),
+            timeout=30,
+        )
+        data = _safe_json(response)
+        if response.status_code == 202:
+            return {
+                "status": "queued",
+                "run_id": data.get("run_id") or data.get("id"),
+                "listing_id": data.get("listing_id"),
+                "trigger_type": data.get("trigger_type"),
+                "message": data.get("message"),
+            }
+        return _error_payload(response, data)
+    except Exception as exc:
+        return {"error": str(exc)}
+
+
+def agoragentic_verification_credentials_set(
+    listing_id: str,
+    cred_type: str,
+    header_value: str,
+    header_name: str = "Authorization",
+    notes: str = "",
+    *,
+    _api_key: str = ""
+) -> Dict[str, Any]:
+    """Attach seller-owned verification credentials to one listing."""
+    api_key = _require_key(_api_key)
+    try:
+        response = requests.put(
+            _build_url(f"/api/capabilities/{listing_id}/verification-credentials"),
+            json={
+                "cred_type": cred_type,
+                "header_name": header_name,
+                "header_value": header_value,
+                "notes": notes,
+            },
+            headers=_headers(api_key),
+            timeout=30,
+        )
+        data = _safe_json(response)
+        if response.status_code == 200:
+            return {
+                "success": data.get("success"),
+                "credential": data.get("credential"),
+                "message": data.get("message"),
+            }
+        return _error_payload(response, data)
+    except Exception as exc:
+        return {"error": str(exc)}
+
+
+def agoragentic_verification_credentials_get(
+    listing_id: str,
+    *,
+    _api_key: str = ""
+) -> Dict[str, Any]:
+    """Read the safe verification-credential summary for one listing."""
+    api_key = _require_key(_api_key)
+    try:
+        response = requests.get(
+            _build_url(f"/api/capabilities/{listing_id}/verification-credentials"),
+            headers=_headers(api_key),
+            timeout=DEFAULT_TIMEOUT,
+        )
+        data = _safe_json(response)
+        if response.status_code == 200:
+            return data
+        return _error_payload(response, data)
+    except Exception as exc:
+        return {"error": str(exc)}
+
+
+def agoragentic_verification_credentials_delete(
+    listing_id: str,
+    *,
+    _api_key: str = ""
+) -> Dict[str, Any]:
+    """Delete seller-owned verification credentials for one listing."""
+    api_key = _require_key(_api_key)
+    try:
+        response = requests.delete(
+            _build_url(f"/api/capabilities/{listing_id}/verification-credentials"),
+            headers=_headers(api_key),
+            timeout=30,
+        )
+        data = _safe_json(response)
+        if response.status_code == 200:
+            return {
+                "success": data.get("success"),
+                "deleted": data.get("deleted"),
+                "message": data.get("message"),
+            }
         return _error_payload(response, data)
     except Exception as exc:
         return {"error": str(exc)}
@@ -940,7 +1191,7 @@ class AgoragenticTools:
             budget = Budget(max_cost=5.00)
             tools = AgoragenticTools(api_key="amk_your_key")
 
-    All 19 marketplace tools are automatically available to the agent.
+    All 27 marketplace tools are automatically available to the agent.
     The API key can also be set via AGORAGENTIC_API_KEY.
     """
 
@@ -970,6 +1221,14 @@ class AgoragenticTools:
             agoragentic_register,
             agoragentic_x402_test,
             agoragentic_categories,
+            bind(agoragentic_listing_create),
+            bind(agoragentic_listing_update),
+            bind(agoragentic_listing_delete),
+            bind(agoragentic_listing_stats),
+            bind(agoragentic_listing_self_test),
+            bind(agoragentic_verification_credentials_set),
+            bind(agoragentic_verification_credentials_get),
+            bind(agoragentic_verification_credentials_delete),
             bind(agoragentic_relay_deploy),
             bind(agoragentic_relay_list),
             bind(agoragentic_relay_test),

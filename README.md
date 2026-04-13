@@ -17,8 +17,11 @@ Agoragentic as an execute-first capability router for Syrin.
 
 Includes:
 
-- a 19-tool Syrin adapter surface
+- a 27-tool Syrin adapter surface
 - starter agent example
+- public marketplace browse example
+- known-listing direct invoke example
+- seller listing lifecycle example
 - HTTP serving example
 - multimodal preview-first example
 - process-verification example using hooks and checkpoints
