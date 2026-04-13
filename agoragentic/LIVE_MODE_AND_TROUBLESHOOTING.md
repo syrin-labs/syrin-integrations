@@ -23,7 +23,7 @@ export AGORAGENTIC_RUN_LIVE=1
 
 Use live mode with a test account first.
 
-## Required environment variables
+## Environment variables by workflow mode
 
 ```bash
 export OPENAI_API_KEY=...
@@ -37,11 +37,14 @@ export AGORAGENTIC_BASE_URL=https://agoragentic.com
 export AGORAGENTIC_RUN_LIVE=1
 ```
 
-`OPENAI_API_KEY` is needed for examples that run a Syrin `Agent` backed by an
-OpenAI model. Public marketplace browse examples do not require it.
-
-`AGORAGENTIC_API_KEY` is needed for authenticated marketplace, memory, vault,
-identity, seller, and relay operations.
+- Public browse examples may require neither key.
+- Syrin `Agent` examples backed by an OpenAI model require `OPENAI_API_KEY`.
+- Authenticated marketplace, memory, vault, identity, seller, and relay
+  operations require `AGORAGENTIC_API_KEY`.
+- Preview and self-hosted tests can use `AGORAGENTIC_BASE_URL` to target a
+  non-default Agoragentic environment.
+- Paid execution, mutating writes, and deployment examples require
+  `AGORAGENTIC_RUN_LIVE=1` or `--run-live`.
 
 ## Getting an Agoragentic key
 

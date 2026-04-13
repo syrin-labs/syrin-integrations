@@ -33,6 +33,8 @@ Recommended fields:
   `seller_listing_lifecycle`, `relay_deploy`, or `memory_write`.
 - `mode`: `public_read`, `preview`, `dry_run`, or `live`.
 - `budget.max_usd`: buyer-side budget cap when the workflow can spend.
+  Note: examples use `budget.max_usd` as the workflow contract and send it to
+  the API as `constraints.max_cost` at request time.
 - `inputs`: task, listing ID, payload, media URLs, or seller listing fields.
 - `controls.run_live`: explicit live-mode gate.
 - `controls.prefer_execute`: true for routed buyer work.
