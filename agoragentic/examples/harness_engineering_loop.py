@@ -82,8 +82,8 @@ def boundary_violations(change: HarnessChange, boundary: HarnessBoundary) -> tup
         ):
             violations.append(f"outside_edit_scope:{path}")
     for action in change.requested_actions:
-        lowered = action.lower()
-        if any(prohibited in lowered for prohibited in boundary.prohibited_actions):
+        lowered = action.strip().lower()
+        if any(prohibited.strip().lower() in lowered for prohibited in boundary.prohibited_actions):
             violations.append(f"prohibited_action:{action}")
     return tuple(violations)
 

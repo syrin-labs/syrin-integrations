@@ -109,15 +109,24 @@ def summarize_result(result: dict[str, Any]) -> dict[str, Any]:
 
 def redact_secrets(value: Any) -> Any:
     """Recursively redact obvious secret-bearing fields from attempt records."""
-    secret_keys = {"api_key", "authorization", "secret", "token", "signing_key"}
+    secret_keywords = {"api_key", "apikey", "authorization", "secret", "token", "signing_key"}
     if isinstance(value, dict):
         return {
-            key: "***REDACTED***" if key.lower() in secret_keys else redact_secrets(item)
+            key: "***REDACTED***"
+            if is_secret_key(key, secret_keywords)
+            else redact_secrets(item)
             for key, item in value.items()
         }
     if isinstance(value, list):
         return [redact_secrets(item) for item in value]
     return value
+
+
+def is_secret_key(key: str, secret_keywords: set[str]) -> bool:
+    """Return true when a field name looks secret-bearing."""
+    normalized = key.lower().replace("-", "_")
+    compact = normalized.replace("_", "")
+    return any(keyword in normalized or keyword in compact for keyword in secret_keywords)
 
 
 def normalize_text(value: Any) -> str:

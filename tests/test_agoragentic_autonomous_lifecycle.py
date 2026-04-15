@@ -75,6 +75,14 @@ class AutonomousLifecycleExampleTests(unittest.TestCase):
         self.assertTrue(record.score.passed)
         self.assertEqual(data["result_summary"].get("api_key"), None)
         self.assertEqual(eval_loop.redact_secrets({"token": "abc"})["token"], "***REDACTED***")
+        self.assertEqual(
+            eval_loop.redact_secrets({"openai_api_key": "abc"})["openai_api_key"],
+            "***REDACTED***",
+        )
+        self.assertEqual(
+            eval_loop.redact_secrets({"auth-token": "abc"})["auth-token"],
+            "***REDACTED***",
+        )
 
     def test_autonomous_eval_discards_regression(self):
         """Lower scores than prior best should be discarded."""
@@ -110,6 +118,15 @@ class AutonomousLifecycleExampleTests(unittest.TestCase):
 
         self.assertEqual(signals[0].severity, "low")
         self.assertEqual(signals[0].trap_class, "content_injection")
+
+    def test_trap_aware_execute_normalizes_trusted_source(self):
+        """Trusted source labels should be case and whitespace insensitive."""
+        signals = trap_execute.detect_trap_signals(
+            "Plain operator note.",
+            source_trust=" Trusted ",
+        )
+
+        self.assertEqual(signals, ())
 
     def test_multimodal_process_scores_visual_evidence_and_overthinking(self):
         """Useful visual artifacts should pass when the process is concise."""
@@ -148,6 +165,21 @@ class AutonomousLifecycleExampleTests(unittest.TestCase):
         self.assertEqual(result["reason"], "boundary_violation")
         self.assertTrue(result["violations"])
 
+    def test_harness_loop_normalizes_prohibited_action_case(self):
+        """Prohibited action matching should be case insensitive."""
+        change = harness_loop.HarnessChange(
+            summary="Deploy",
+            changed_files=("prompts/routing.md",),
+            before_score=0.8,
+            after_score=0.9,
+            complexity_delta=0,
+            requested_actions=("Deploy Live",),
+        )
+
+        result = harness_loop.evaluate_harness_change(change)
+        self.assertEqual(result["decision"], "discard")
+        self.assertIn("prohibited_action:Deploy Live", result["violations"])
+
     def test_harness_loop_keeps_same_score_when_simpler(self):
         """Equal score with lower complexity should be kept."""
         change = harness_loop.HarnessChange(
@@ -183,6 +215,12 @@ class AutonomousLifecycleExampleTests(unittest.TestCase):
         self.assertIn("inputs/task.json", data["manifest_entries"])
         self.assertEqual(data["execute_payload"]["constraints"]["max_cost"], 0.5)
         self.assertIn("preview-only", data["instructions"])
+
+    def test_openai_sandbox_preserves_zero_budget(self):
+        """Sandbox payloads should not silently raise a caller-provided zero budget."""
+        payload = openai_sandbox.build_execute_payload("Preview only.", max_cost=0.0)
+
+        self.assertEqual(payload["constraints"]["max_cost"], 0.0)
 
 
 if __name__ == "__main__":

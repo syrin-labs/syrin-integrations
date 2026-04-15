@@ -495,7 +495,7 @@ sandbox or another hosted sandbox provider:
     "require_guardrails": true
   },
   "expected_outputs": [
-    "manifest_plan",
+    "manifest_entries",
     "guardrail_report",
     "execute_payload"
   ]

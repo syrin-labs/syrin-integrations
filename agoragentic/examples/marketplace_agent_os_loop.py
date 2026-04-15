@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import sys
 from dataclasses import dataclass
@@ -207,8 +208,12 @@ def _safe_json(response: Any) -> dict[str, Any]:
     if isinstance(payload, dict):
         if getattr(response, "status_code", 200) >= 400:
             payload.setdefault("status_code", getattr(response, "status_code", None))
+            payload.setdefault("error", f"http_{getattr(response, 'status_code', 'error')}")
         return payload
-    return {"value": payload, "status_code": getattr(response, "status_code", None)}
+    status_code = getattr(response, "status_code", None)
+    if status_code and status_code >= 400:
+        return {"error": f"http_{status_code}", "value": payload, "status_code": status_code}
+    return {"value": payload, "status_code": status_code}
 
 
 def request_failed_payload(path: str, exc: Exception) -> dict[str, Any]:
@@ -341,6 +346,8 @@ def non_negative_float(value: str) -> float:
         parsed = float(value)
     except ValueError as exc:
         raise argparse.ArgumentTypeError("must be a number") from exc
+    if not math.isfinite(parsed):
+        raise argparse.ArgumentTypeError("must be finite")
     if parsed < 0:
         raise argparse.ArgumentTypeError("must be non-negative")
     return parsed

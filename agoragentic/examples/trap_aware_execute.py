@@ -69,6 +69,7 @@ def detect_trap_signals(
     """Detect common trap indicators before tool execution."""
     text = untrusted_text.lower()
     action = requested_action.lower()
+    normalized_source_trust = source_trust.strip().lower()
     signals: list[TrapSignal] = []
 
     if re.search(r"<!--|display\s*:\s*none|visibility\s*:\s*hidden", text):
@@ -119,7 +120,7 @@ def detect_trap_signals(
                 "Input pressures the reviewer to approve without evidence.",
             )
         )
-    if source_trust != "trusted" and not signals:
+    if normalized_source_trust != "trusted" and not signals:
         signals.append(
             TrapSignal(
                 "content_injection",

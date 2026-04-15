@@ -66,6 +66,27 @@ class AgentOSLoopExampleTests(unittest.TestCase):
         self.assertEqual(payload["constraints"]["max_cost"], 0.25)
         self.assertEqual(payload["input"]["task"], "Summarize this")
 
+    def test_non_negative_float_rejects_non_finite_values(self):
+        """CLI budget parsing should reject NaN and Infinity."""
+        with self.assertRaises(Exception):
+            example.non_negative_float("nan")
+        with self.assertRaises(Exception):
+            example.non_negative_float("inf")
+
+    def test_safe_json_marks_http_error_payloads(self):
+        """HTTP error JSON should be explicit enough for downstream classification."""
+        class FakeResponse:
+            status_code = 500
+            text = "server error"
+
+            def json(self):
+                return {"message": "server error"}
+
+        result = example._safe_json(FakeResponse())
+
+        self.assertEqual(result["status_code"], 500)
+        self.assertEqual(result["error"], "http_500")
+
     def test_prompt_preserves_preview_first_contract(self):
         """The prompt should keep spend and mutation gates explicit."""
         snapshot = example.ControlPlaneSnapshot(

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from dataclasses import dataclass
 from typing import Any
 
@@ -108,7 +109,7 @@ def build_execute_payload(task: str, max_cost: float) -> dict[str, Any]:
             },
         },
         "constraints": {
-            "max_cost": max(0.01, float(max_cost)),
+            "max_cost": float(max_cost),
             "prefer_execute": True,
         },
     }
@@ -160,6 +161,8 @@ def non_negative_float(value: str) -> float:
         parsed = float(value)
     except ValueError as exc:
         raise argparse.ArgumentTypeError("must be a number") from exc
+    if not math.isfinite(parsed):
+        raise argparse.ArgumentTypeError("must be finite")
     if parsed < 0:
         raise argparse.ArgumentTypeError("must be non-negative")
     return parsed
