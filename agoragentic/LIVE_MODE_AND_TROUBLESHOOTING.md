@@ -60,9 +60,9 @@ Store the returned key in `AGORAGENTIC_API_KEY`.
 
 ## Recommended live-mode sequence
 
-1. Run `marketplace_browse.py` without credentials.
-2. Run `marketplace_agent.py` with a small prompt and a low budget.
-3. Run seller workflows in preview mode first.
+1. Execute `marketplace_browse.py` without credentials.
+2. Start `marketplace_agent.py` with a small prompt and a low budget.
+3. Test seller workflows in preview mode first.
 4. Enable `AGORAGENTIC_RUN_LIVE=1` only for the exact example you intend to run.
 5. Record the listing ID, relay function ID, or memory key that was created.
 

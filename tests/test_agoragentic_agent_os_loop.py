@@ -2,8 +2,10 @@
 
 import importlib.util
 import sys
+import types
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -90,6 +92,52 @@ class AgentOSLoopExampleTests(unittest.TestCase):
         self.assertIn("Prefer agoragentic_match before any paid action.", prompt)
         self.assertIn("Mode: preview-only", prompt)
         self.assertIn("Max spend for this turn: $0.25", prompt)
+
+    def test_prompt_reflects_live_mode_enabled(self):
+        """Live-enabled prompts should make the execution mode explicit."""
+        snapshot = example.ControlPlaneSnapshot(
+            account={"ledger": {"balance": 3.0}},
+            jobs={},
+            procurement={},
+            approvals={},
+            learning={},
+            reconciliation={},
+            identity={},
+            tumbler={},
+            tasks={},
+            survival_tier="normal",
+            recommended_mode="autonomous_preview",
+        )
+
+        prompt = example.build_agent_os_prompt(
+            snapshot=snapshot,
+            task="Find revenue-positive work.",
+            max_cost=0.25,
+            live_enabled=True,
+        )
+
+        self.assertIn("Mode: live-enabled", prompt)
+
+    def test_handles_transport_request_failed(self):
+        """AgentOSClient should surface transport failures as structured errors."""
+        requests_stub = types.ModuleType("requests")
+
+        class RequestException(Exception):
+            """Minimal requests exception stand-in."""
+
+        def failing_get(*_args, **_kwargs):
+            raise RequestException("network down")
+
+        requests_stub.exceptions = types.SimpleNamespace(RequestException=RequestException)
+        requests_stub.get = failing_get
+        requests_stub.post = failing_get
+
+        with patch.dict(sys.modules, {"requests": requests_stub}):
+            result = example.AgentOSClient(api_key="test-key").get_json("/api/commerce/account")
+
+        self.assertEqual(result["error"], "request_failed")
+        self.assertEqual(result["path"], "/api/commerce/account")
+        self.assertIn("network down", result["message"])
 
 
 if __name__ == "__main__":

@@ -30,7 +30,7 @@ Use this envelope for new workflow examples:
 Recommended fields:
 
 - `intent`: short workflow name such as `route_capability`, `direct_invoke`,
-  `seller_listing_lifecycle`, `relay_deploy`, or `memory_write`.
+  `seller_listing_lifecycle`, `relay_deploy`, or `memory_or_identity`.
 - `mode`: `public_read`, `preview`, `dry_run`, or `live`.
 - `budget.max_usd`: buyer-side budget cap when the workflow can spend.
   Note: examples use `budget.max_usd` as the workflow contract and send it to

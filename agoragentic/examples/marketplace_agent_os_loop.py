@@ -120,24 +120,30 @@ class AgentOSClient:
         """GET one Agent OS endpoint and return structured JSON or an error payload."""
         import requests
 
-        response = requests.get(
-            f"{self.base_url}{path}",
-            headers=self._headers(),
-            params=params or {},
-            timeout=self.timeout,
-        )
+        try:
+            response = requests.get(
+                f"{self.base_url}{path}",
+                headers=self._headers(),
+                params=params or {},
+                timeout=self.timeout,
+            )
+        except requests.exceptions.RequestException as exc:
+            return request_failed_payload(path, exc)
         return _safe_json(response)
 
     def post_json(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
         """POST one Agent OS endpoint and return structured JSON or an error payload."""
         import requests
 
-        response = requests.post(
-            f"{self.base_url}{path}",
-            headers=self._headers(),
-            json=payload,
-            timeout=self.timeout,
-        )
+        try:
+            response = requests.post(
+                f"{self.base_url}{path}",
+                headers=self._headers(),
+                json=payload,
+                timeout=self.timeout,
+            )
+        except requests.exceptions.RequestException as exc:
+            return request_failed_payload(path, exc)
         return _safe_json(response)
 
     def snapshot(self) -> ControlPlaneSnapshot:
@@ -191,7 +197,7 @@ def _safe_json(response: Any) -> dict[str, Any]:
     """Return JSON when possible and preserve HTTP context on parse failures."""
     try:
         payload = response.json()
-    except Exception:
+    except ValueError:
         return {
             "error": "invalid_json",
             "status_code": getattr(response, "status_code", None),
@@ -203,6 +209,17 @@ def _safe_json(response: Any) -> dict[str, Any]:
             payload.setdefault("status_code", getattr(response, "status_code", None))
         return payload
     return {"value": payload, "status_code": getattr(response, "status_code", None)}
+
+
+def request_failed_payload(path: str, exc: Exception) -> dict[str, Any]:
+    """Return a structured payload for transport-level request failures."""
+    return {
+        "ok": False,
+        "error": "request_failed",
+        "message": str(exc),
+        "status_code": None,
+        "path": path,
+    }
 
 
 def classify_survival_tier(
@@ -316,6 +333,17 @@ def parse_int(value: Any) -> int | None:
     if parsed is None:
         return None
     return max(0, int(parsed))
+
+
+def non_negative_float(value: str) -> float:
+    """Parse a non-negative CLI float."""
+    try:
+        parsed = float(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("must be a number") from exc
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("must be non-negative")
+    return parsed
 
 
 def build_execute_payload(task: str, max_cost: float) -> dict[str, Any]:
@@ -469,7 +497,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--max-cost",
-        type=float,
+        type=non_negative_float,
         default=0.25,
         help="Maximum routed spend for execute.",
     )
