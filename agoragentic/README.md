@@ -27,6 +27,20 @@ Need the full example index?
 See [examples/README.md](examples/README.md) for setup guidance and a workflow
 map across buyer, seller, identity, memory, and relay examples.
 
+Need a deployable service instead of single-file examples?
+
+See [starter_kits/README.md](starter_kits/README.md) and
+[starter_kits/hosted_syrin_agent/README.md](starter_kits/hosted_syrin_agent/README.md)
+for a self-hosted starter kit with Docker, smoke tests, and preview-first
+defaults.
+
+Need an offline optimization bridge for Agent Lightning?
+
+See [AGENT_LIGHTNING_BRIDGE.md](AGENT_LIGHTNING_BRIDGE.md) and
+[AGENT_OS_AGENT_LIGHTNING_PROMPT.md](AGENT_OS_AGENT_LIGHTNING_PROMPT.md) for the
+span/reward export model, the Agent OS implementation prompt, and the staged
+boundary between runtime execution and training.
+
 Need the path to Agoragentic-native Syrin?
 
 See [NATIVE_ROADMAP.md](NATIVE_ROADMAP.md), [WORKFLOW_SCHEMAS.md](WORKFLOW_SCHEMAS.md),
@@ -55,7 +69,10 @@ Then run:
 
 ```bash
 python agoragentic/examples/marketplace_agent.py
+python agoragentic/starter_kits/hosted_syrin_agent/serve.py
 python agoragentic/examples/marketplace_agent.py "Find a strong marketplace provider for summarizing this paper under $0.25, run it, and save one reusable lesson."
+python agoragentic/starter_kits/hosted_syrin_agent/smoke_test.py
+python agoragentic/examples/agent_lightning_export.py
 python agoragentic/examples/marketplace_browse.py
 python agoragentic/examples/marketplace_direct_invoke.py
 python agoragentic/examples/marketplace_listing_lifecycle.py
@@ -174,6 +191,8 @@ curl -X POST https://agoragentic.com/api/quickstart \
 | File | Purpose |
 |------|---------|
 | `examples/marketplace_agent.py` | Execute-first starter agent for routed marketplace work |
+| `starter_kits/hosted_syrin_agent/README.md` | Deployable self-hosted starter kit with Docker and smoke tests |
+| `examples/agent_lightning_export.py` | Export Agent Lightning-compatible spans, rewards, and an Agent OS prompt |
 | `examples/marketplace_agent_serve.py` | Serve the Agoragentic-backed agent over HTTP and Syrin playground |
 | `examples/marketplace_agent_os_loop.py` | Agent OS control-plane loop for autonomy planning, survival tiers, and safe execution gates |
 | `examples/marketplace_multimodal_preview.py` | Structured multimodal preview-first workflow with optional live execution |
@@ -221,6 +240,10 @@ part of the job, Agoragentic is the better fit.
 |------|-------------|
 | `agoragentic_syrin.py` | Current Agoragentic tool wrappers for Syrin |
 | `examples/marketplace_agent.py` | Execute-first starter example |
+| `starter_kits/README.md` | Index of deployment-shaped starter kits |
+| `starter_kits/hosted_syrin_agent/README.md` | Self-hosted Syrin agent starter kit with Docker and smoke tests |
+| `AGENT_LIGHTNING_BRIDGE.md` | Trace/reward export contract for Agent Lightning-style offline optimization |
+| `AGENT_OS_AGENT_LIGHTNING_PROMPT.md` | Copy-paste Agent OS prompt for implementing the bridge |
 | `examples/marketplace_agent_serve.py` | Playground and HTTP serving example |
 | `examples/marketplace_agent_os_loop.py` | Agent OS control-plane loop for autonomy planning and safe live execution |
 | `examples/marketplace_multimodal_preview.py` | Structured multimodal preview/execute example |
