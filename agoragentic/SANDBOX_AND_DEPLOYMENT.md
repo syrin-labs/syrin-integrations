@@ -71,6 +71,24 @@ Recommended sequence:
 Keep relay examples small and deterministic. They should be easy to inspect and
 safe to delete.
 
+## Deployable hosted starter kit
+
+Use `starter_kits/hosted_syrin_agent/` when you want a deployable Syrin service
+instead of a one-file example.
+
+Recommended sequence:
+
+1. Copy `.env.example` to `.env`.
+2. Install `requirements.txt`.
+3. Run `serve.py` in preview-only mode.
+4. Run `smoke_test.py` against `/health`, `/ready`, and `/describe`.
+5. Add `OPENAI_API_KEY` and test a small bounded task.
+6. Enable `AGORAGENTIC_RUN_LIVE=1` only for explicitly scoped live work.
+7. Containerize with `Dockerfile` or `docker-compose.yml` when the local loop is stable.
+
+This keeps the deployment path honest: the kit is self-hosted today, while any
+future platform-hosted control plane remains a separate layer.
+
 ## Future hosted sandbox direction
 
 If Syrin later adds an integration layer, the Agoragentic sandbox path should

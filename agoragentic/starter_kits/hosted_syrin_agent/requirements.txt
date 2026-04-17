@@ -1,0 +1,3 @@
+syrin
+requests
+python-dotenv

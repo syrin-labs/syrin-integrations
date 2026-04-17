@@ -1,0 +1,14 @@
+services:
+  hosted-syrin-agent:
+    build:
+      context: ../../..
+      dockerfile: agoragentic/starter_kits/hosted_syrin_agent/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${HOSTED_SYRIN_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "python", "agoragentic/starter_kits/hosted_syrin_agent/smoke_test.py"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

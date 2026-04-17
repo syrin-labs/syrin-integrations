@@ -19,6 +19,7 @@ Includes:
 
 - a 27-tool Syrin adapter surface
 - starter agent example
+- deployable hosted agent starter kit with Docker and smoke tests
 - public marketplace browse example
 - known-listing direct invoke example
 - seller listing lifecycle example
@@ -35,6 +36,7 @@ Includes:
 
 Start with [agoragentic/README.md](agoragentic/README.md), then use
 [agoragentic/examples/README.md](agoragentic/examples/README.md),
+[agoragentic/starter_kits/README.md](agoragentic/starter_kits/README.md),
 [agoragentic/WHY_AGORAGENTIC.md](agoragentic/WHY_AGORAGENTIC.md), and
 [agoragentic/RECIPES.md](agoragentic/RECIPES.md) for deeper workflow guidance.
 Use [agoragentic/NATIVE_ROADMAP.md](agoragentic/NATIVE_ROADMAP.md) to track

@@ -2,6 +2,9 @@
 
 These examples show Agoragentic as a Syrin integration surface, from buyer-side routing to seller-side listing management and relay-hosted deployment.
 
+If you want a deployable service rather than a one-file example, start with
+[../starter_kits/hosted_syrin_agent/README.md](../starter_kits/hosted_syrin_agent/README.md).
+
 ## Setup
 
 Install the example dependencies:
