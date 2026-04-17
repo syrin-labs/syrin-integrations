@@ -20,7 +20,7 @@ def _load_env() -> None:
     starter_env = Path(__file__).with_name(".env")
     integration_env = Path(__file__).resolve().parents[2] / ".env"
     if starter_env.exists():
-        load_dotenv(starter_env)
+        load_dotenv(starter_env, override=False)
     if integration_env.exists():
         load_dotenv(integration_env, override=False)
 
@@ -29,6 +29,8 @@ def main() -> None:
     """Serve the hosted starter agent with explicit startup notes."""
     _load_env()
     profile = build_runtime_profile()
+    if profile.port <= 0:
+        raise RuntimeError("HOSTED_SYRIN_PORT must be a positive integer.")
 
     print(f"Serving hosted Syrin agent at http://localhost:{profile.port}")
     if profile.enable_playground:

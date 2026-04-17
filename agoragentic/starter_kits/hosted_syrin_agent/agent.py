@@ -33,5 +33,5 @@ def build_agent(profile: HostedStarterProfile):
         model=_build_model(profile),
         budget=Budget(max_cost=profile.max_budget_usd, exceed_policy=ExceedPolicy.STOP),
         system_prompt=build_system_prompt(profile.live_enabled),
-        tools=AgoragenticTools(api_key=os.getenv("AGORAGENTIC_API_KEY", "")),
+        tools=AgoragenticTools(),
     )

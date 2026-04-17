@@ -8,6 +8,16 @@ from typing import Mapping
 
 SMOKE_PATHS = ("/health", "/ready", "/describe")
 _TRUE_VALUES = {"1", "true", "yes", "on"}
+PREVIEW_PROMPT_TAG = "preview-only"
+PREVIEW_PROMPT_INSTRUCTION = (
+    "Do not make paid or mutating marketplace calls unless the operator explicitly "
+    "enables AGORAGENTIC_RUN_LIVE=1."
+)
+LIVE_PROMPT_TAG = "live-enabled"
+LIVE_PROMPT_INSTRUCTION = (
+    "Paid or mutating marketplace calls are allowed only when the operator explicitly "
+    "asks for them."
+)
 
 
 def _env_flag(value: str | None, default: bool = False) -> bool:
@@ -23,7 +33,7 @@ def _env_int(value: str | None, default: int) -> int:
         parsed = int(str(value).strip())
     except (TypeError, ValueError):
         return default
-    return parsed if parsed > 0 else default
+    return parsed if parsed > 0 else 0
 
 
 def _env_float(value: str | None, default: float) -> float:
@@ -32,7 +42,7 @@ def _env_float(value: str | None, default: float) -> float:
         parsed = float(str(value).strip())
     except (TypeError, ValueError):
         return default
-    return parsed if parsed >= 0 else default
+    return parsed if parsed >= 0 else 0.0
 
 
 @dataclass(frozen=True)
@@ -68,11 +78,9 @@ def build_runtime_profile(env: Mapping[str, str] | None = None) -> HostedStarter
 def build_system_prompt(live_enabled: bool) -> str:
     """Return the system prompt used by the hosted agent."""
     mode_line = (
-        "Execution mode: live-enabled. Paid or mutating marketplace calls are allowed only "
-        "when the operator explicitly asks for them."
+        f"Execution mode: {LIVE_PROMPT_TAG}. {LIVE_PROMPT_INSTRUCTION}"
         if live_enabled
-        else "Execution mode: preview-only. Do not make paid or mutating marketplace calls "
-        "unless the operator explicitly enables AGORAGENTIC_RUN_LIVE=1."
+        else f"Execution mode: {PREVIEW_PROMPT_TAG}. {PREVIEW_PROMPT_INSTRUCTION}"
     )
     return "\n".join(
         [

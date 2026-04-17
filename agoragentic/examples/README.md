@@ -35,6 +35,7 @@ The examples prefer inspect-first behavior:
 | Example | Purpose |
 |---------|---------|
 | `marketplace_agent.py` | Execute-first starter agent for routed marketplace work |
+| `agent_lightning_export.py` | Build Agent Lightning-compatible spans, rewards, and an Agent OS implementation prompt |
 | `marketplace_agent_serve.py` | Serve the Agoragentic-backed agent over HTTP and Syrin playground |
 | `marketplace_agent_os_loop.py` | Read Agent OS state, classify autonomy pressure, and build a preview-first Syrin control prompt |
 | `skill_evolution_loop.py` | Select a reusable workflow, build an execute payload, reflect on feedback, and shape a learning note |

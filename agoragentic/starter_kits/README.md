@@ -21,6 +21,8 @@ Includes:
 
 - runtime config helpers with preview-first defaults
 - served agent entrypoint
+- Agent Lightning-compatible trace and reward export helpers
+- Agent OS implementation prompt
 - `.env.example`
 - Dockerfile and `docker-compose.yml`
 - `/health`, `/ready`, and `/describe` smoke test

@@ -80,14 +80,30 @@ Recommended sequence:
 
 1. Copy `.env.example` to `.env`.
 2. Install `requirements.txt`.
-3. Run `serve.py` in preview-only mode.
-4. Run `smoke_test.py` against `/health`, `/ready`, and `/describe`.
-5. Add `OPENAI_API_KEY` and test a small bounded task.
-6. Enable `AGORAGENTIC_RUN_LIVE=1` only for explicitly scoped live work.
-7. Containerize with `Dockerfile` or `docker-compose.yml` when the local loop is stable.
+3. Run `serve.py` in preview-only mode in one terminal.
+4. Run `smoke_test.py` in a second terminal against `/health`, `/ready`, and `/describe`.
+5. Export an Agent Lightning-compatible span/reward packet with `agent_lightning_export.py`.
+6. Add `OPENAI_API_KEY` and test a small bounded task.
+7. Enable `AGORAGENTIC_RUN_LIVE=1` only for explicitly scoped live work.
+8. Containerize with `Dockerfile` or `docker-compose.yml` when the local loop is stable.
 
 This keeps the deployment path honest: the kit is self-hosted today, while any
 future platform-hosted control plane remains a separate layer.
+
+## Agent Lightning bridge
+
+Use `AGENT_LIGHTNING_BRIDGE.md` when you want to connect the starter kit to an
+offline optimization loop.
+
+The intended shape is:
+
+1. Syrin + Agoragentic runs the task.
+2. The starter kit exports spans, rewards, and metadata as JSON.
+3. Agent Lightning or another optimizer ingests those packets outside the live request path.
+4. Prompt or policy updates are reviewed before promotion back into the runtime.
+
+That separation is important. The training loop should not sit inline with the
+production request handler.
 
 ## Future hosted sandbox direction
 

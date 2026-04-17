@@ -27,7 +27,18 @@ def run_smoke(base_url: str, timeout: float) -> dict[str, Any]:
 
     results = []
     for url in build_smoke_targets(base_url):
-        response = requests.get(url, timeout=timeout)
+        try:
+            response = requests.get(url, timeout=timeout)
+        except requests.RequestException as exc:
+            results.append(
+                {
+                    "url": url,
+                    "status_code": None,
+                    "ok": False,
+                    "body": {"error": f"{type(exc).__name__}: {exc}"},
+                }
+            )
+            continue
         try:
             body = response.json()
         except ValueError:

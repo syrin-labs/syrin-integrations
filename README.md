@@ -20,6 +20,7 @@ Includes:
 - a 27-tool Syrin adapter surface
 - starter agent example
 - deployable hosted agent starter kit with Docker and smoke tests
+- Agent Lightning-compatible export bridge and Agent OS implementation prompt
 - public marketplace browse example
 - known-listing direct invoke example
 - seller listing lifecycle example
