@@ -88,7 +88,11 @@ def _normalize_service_name(value: Any, prefix: str = "agent-os") -> str:
     candidate = normalized or f"{prefix}-{uuid.uuid4().hex[:8]}"
     if len(candidate) < 4:
         candidate = f"{prefix}-{candidate}"
-    return candidate[:40]
+    candidate = candidate[:40].strip("-")
+    if len(candidate) < 4:
+        candidate = f"{prefix}-{uuid.uuid4().hex[:8]}"
+        candidate = candidate[:40].strip("-")
+    return candidate
 
 
 def _normalize_app_runner_runtime(value: Any, fallback: str = "PYTHON_3") -> str:
@@ -125,7 +129,11 @@ def _normalize_runtime_environment_variables(
     return env
 
 
-def _normalize_vault_reference(ref: Mapping[str, Any], index: int) -> dict[str, Any]:
+def _normalize_vault_reference(
+    ref: Mapping[str, Any],
+    index: int,
+    default_provider: str,
+) -> dict[str, Any]:
     """Validate and normalize one secret reference for adapter handoff."""
     if not isinstance(ref, Mapping):
         raise ValueError(f"Vault handoff rejected invalid secret references: index {index}: secret reference must be an object")
@@ -146,7 +154,9 @@ def _normalize_vault_reference(ref: Mapping[str, Any], index: int) -> dict[str, 
     return {
         "secret_id": str(secret_id),
         "env_name": _normalize_env_name(ref.get("env_name") or ref.get("envName") or ref.get("name"), index),
-        "allowed_provider": normalize_provider_name(ref.get("provider") or ref.get("allowed_provider") or "simulated_runtime"),
+        "allowed_provider": normalize_provider_name(
+            ref.get("provider") or ref.get("allowed_provider") or default_provider
+        ),
         "status": "reference_validated_no_inline_exposure",
     }
 
@@ -154,6 +164,7 @@ def _normalize_vault_reference(ref: Mapping[str, Any], index: int) -> dict[str, 
 def build_vault_handoff(context: Mapping[str, Any] | None = None) -> dict[str, Any]:
     """Build a redacted secret-handoff contract for provider adapters."""
     context = _plain_object(context)
+    provider_name = normalize_provider_name(context.get("provider_name") or context.get("provider")) or "simulated_runtime"
     secrets = (
         context.get("secret_references")
         or context.get("secret_refs")
@@ -164,13 +175,13 @@ def build_vault_handoff(context: Mapping[str, Any] | None = None) -> dict[str, A
     if not isinstance(secrets, list):
         secrets = []
 
-    references = [_normalize_vault_reference(ref, index) for index, ref in enumerate(secrets)]
+    references = [_normalize_vault_reference(ref, index, provider_name) for index, ref in enumerate(secrets)]
     return {
         "schema": "agoragentic.agent-os.vault-handoff.v1",
         "id": _new_id("vh"),
         "status": "ready_for_adapter",
         "credentials_redacted": True,
-        "provider_name": normalize_provider_name(context.get("provider_name") or context.get("provider")),
+        "provider_name": provider_name,
         "injected_references": references,
         "allowed_boundary": "adapter_injection_only",
     }
@@ -283,8 +294,10 @@ class AwsAppRunnerProviderAdapter(BaseHostedProviderAdapter):
         """Validate secret references and convert them into runtime secret mappings."""
         refs = list((vault_handoff or {}).get("injected_references") or [])
         runtime_secrets = {}
+        skipped_references = []
         for ref in refs:
             if ref.get("allowed_provider") != self.provider_name:
+                skipped_references.append(str(ref.get("env_name") or ref.get("secret_id") or "unknown_secret"))
                 continue
             secret_id = str(ref.get("secret_id") or "")
             if not AWS_SECRET_ARN_PATTERN.match(secret_id):
@@ -292,6 +305,11 @@ class AwsAppRunnerProviderAdapter(BaseHostedProviderAdapter):
                     f"Provider adapter blocked: {ref.get('env_name') or 'secret'} must reference an AWS Secrets Manager or SSM Parameter Store ARN."
                 )
             runtime_secrets[str(ref.get("env_name"))] = secret_id
+        if skipped_references:
+            raise ValueError(
+                "Provider adapter blocked: secret references target a different provider: "
+                + ", ".join(skipped_references)
+            )
 
         return {
             "status": "secrets_prepared_for_runtime",

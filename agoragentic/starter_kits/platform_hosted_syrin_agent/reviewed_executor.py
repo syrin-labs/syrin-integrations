@@ -183,12 +183,15 @@ def build_hosted_execution_receipt(
     result: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build a normalized receipt for reviewed hosted actions."""
+    decision = _plain_object(decision)
     result = _plain_object(result)
-    provider_state = _plain_object(result.get("deployment", deployment).get("provider_state"))
+    deployment_snapshot = _plain_object(result.get("deployment") or deployment)
+    provider_state = _plain_object(deployment_snapshot.get("provider_state") or {})
+    allowed_claims = _plain_object(decision.get("allowed_execution_claims") or {})
     receipt = {
         "reviewed_payload_hash": decision.get("reviewed_payload_hash"),
         "deployment_id": deployment["id"],
-        "provider_name": provider_state.get("provider_name") or decision.get("allowed_execution_claims", {}).get("provider_name"),
+        "provider_name": provider_state.get("provider_name") or allowed_claims.get("provider_name"),
         "payment_rail": HOSTED_CONTROL_PLANE_PAYMENT_RAIL,
         "receipt_required": False,
     }

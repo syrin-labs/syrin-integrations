@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import uuid
 from typing import Any, Mapping
 
@@ -31,6 +32,15 @@ def _latest(entries: list[Mapping[str, Any]] | None) -> Mapping[str, Any] | None
 def _plain_object(value: Any) -> dict[str, Any]:
     """Normalize plain dictionaries and ignore other values."""
     return dict(value) if isinstance(value, Mapping) else {}
+
+
+def _non_negative_finite_float(value: Any, default: float = 0.0) -> float:
+    """Normalize numeric metadata without accepting malformed or non-finite values."""
+    try:
+        parsed = float(str(value).strip())
+    except (AttributeError, TypeError, ValueError):
+        return default
+    return parsed if math.isfinite(parsed) and parsed >= 0 else default
 
 
 def build_live_effects(overrides: Mapping[str, Any] | None = None) -> dict[str, bool]:
@@ -98,7 +108,7 @@ def build_smoke_result(
         "failure_class": failure_class,
         "provider": result.get("provider") or provider_state.get("provider_name"),
         "latency_ms": result.get("latency_ms"),
-        "spend_usdc": max(0.0, float(result.get("spend_usdc") or 0.0)),
+        "spend_usdc": _non_negative_finite_float(result.get("spend_usdc"), 0.0),
         "requested_checks": [str(check) for check in requested_checks],
         "live_effects": build_live_effects(result.get("live_effects")),
         "evidence_refs": [str(ref) for ref in result.get("evidence_refs") or []],
@@ -129,7 +139,23 @@ def build_platform_hosted_deployment(
         "billing_authorized": profile.billing_authorized,
         "region": profile.region,
     }
-    state.update(_plain_object(provider_state))
+    reserved_provider_state_keys = {
+        "billing_authorized",
+        "live_effects_enabled",
+        "operator_approved",
+        "provider",
+        "provider_name",
+        "provider_ref",
+        "runtime_bridge_wired",
+        "service_arn",
+        "service_url",
+    }
+    provider_overrides = {
+        key: value
+        for key, value in _plain_object(provider_state).items()
+        if key not in reserved_provider_state_keys
+    }
+    state.update(provider_overrides)
     if profile.service_url and "service_url" not in state:
         state["service_url"] = profile.service_url
 

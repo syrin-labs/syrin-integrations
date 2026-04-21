@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import os
 from dataclasses import dataclass
 from typing import Mapping
@@ -35,7 +36,7 @@ def _env_float(value: str | None, default: float) -> float:
         parsed = float(str(value).strip())
     except (TypeError, ValueError):
         return default
-    return parsed if parsed >= 0 else 0.0
+    return parsed if math.isfinite(parsed) and parsed >= 0 else 0.0
 
 
 @dataclass(frozen=True)
