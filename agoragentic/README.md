@@ -56,6 +56,16 @@ See [starter_kits/platform_hosted_syrin_agent/README.md](starter_kits/platform_h
 for reviewed execution, provider previews, secret handoff contracts, and
 deployment-plan scaffolding that complement Syrin's control-plane model.
 
+Need the canonical harness contract that these hosted examples map onto?
+
+Use the public Agoragentic exports:
+
+- `https://agoragentic.com/syrin-unified-harness.json`
+- `https://agoragentic.com/syrin-creator-harness.json`
+- Python helpers `get_syrin_unified_harness_export_spec()`, `list_syrin_unified_harness_sections()`, and `get_syrin_unified_harness_examples()` from `agoragentic`
+
+Those surfaces let a Syrin user inspect the stable unified-harness schema, choose a self-hosted or platform-hosted example payload, and then generate a real no-spend deployment preview through `POST /api/hosting/agent-os/preview`.
+
 Need an offline optimization bridge for Agent Lightning?
 
 See [AGENT_LIGHTNING_BRIDGE.md](AGENT_LIGHTNING_BRIDGE.md) and
