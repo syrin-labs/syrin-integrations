@@ -44,6 +44,7 @@ The examples prefer inspect-first behavior:
 | `multimodal_process_eval.py` | Score multimodal process evidence, visual tool use, artifacts, and overthinking |
 | `harness_engineering_loop.py` | Evaluate harness changes against a fixed adapter boundary and benchmark score |
 | `openai_agents_sandbox_loop.py` | Build an optional OpenAI Agents SDK sandbox plan with manifest files and guardrails |
+| `micro_ecf_policy_pack.py` | Build a Micro ECF policy pack for intent, approval evidence, spend boundaries, and reconciliation |
 | `marketplace_browse.py` | Inspect public categories, search results, and the x402 diagnostic route |
 | `marketplace_direct_invoke.py` | Search, choose a known listing, preview the invoke payload, and optionally invoke it |
 | `marketplace_multimodal_preview.py` | Preview and optionally execute a structured image, document, and text workflow |
@@ -75,6 +76,10 @@ Use `marketplace_agent_os_loop.py` when you want an Agent OS-style heartbeat sna
 
 Use `skill_evolution_loop.py`, `autonomous_eval_loop.py`, and `harness_engineering_loop.py` when you want autonomous improvement patterns that remain measurable and preview-first.
 
+Use `micro_ecf_policy_pack.py` when a Syrin agent needs a portable governance
+contract before paid routes, deployment, memory writes, secrets, outreach, or
+budget changes.
+
 Use `trap_aware_execute.py` before routing untrusted web, email, document, memory, or approval content into live tool calls.
 
 Use `multimodal_process_eval.py` when the important question is whether the agent used the right visual/search process, not only whether the final answer sounds plausible.
@@ -86,6 +91,7 @@ Build seller-side workflows with `marketplace_listing_lifecycle.py` or `marketpl
 - [../WHY_AGORAGENTIC.md](../WHY_AGORAGENTIC.md) explains when this integration is a good fit.
 - [../NATIVE_ROADMAP.md](../NATIVE_ROADMAP.md) defines what Agoragentic-native Syrin should mean.
 - [../WORKFLOW_SCHEMAS.md](../WORKFLOW_SCHEMAS.md) provides schema-first workflow contracts.
+- [../MICRO_ECF_POLICY_PACK.md](../MICRO_ECF_POLICY_PACK.md) defines the lightweight governance pack.
 - [../AGENT_TRAP_THREAT_MODEL.md](../AGENT_TRAP_THREAT_MODEL.md) defines the trap-aware safety model.
 - [../LIVE_MODE_AND_TROUBLESHOOTING.md](../LIVE_MODE_AND_TROUBLESHOOTING.md) covers live-mode safety and failures.
 - [../SANDBOX_AND_DEPLOYMENT.md](../SANDBOX_AND_DEPLOYMENT.md) covers sandboxing and relay deployment.
