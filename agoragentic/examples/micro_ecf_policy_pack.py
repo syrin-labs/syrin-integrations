@@ -18,6 +18,7 @@ import argparse
 import hashlib
 import json
 import math
+import re
 from dataclasses import dataclass
 from typing import Any
 
@@ -228,7 +229,12 @@ def fingerprint_policy(policy: MicroECFPolicyPack) -> str:
 def _contains_any(text: str, terms: tuple[str, ...]) -> list[str]:
     """Return matching terms from a case-insensitive text scan."""
     lowered = text.lower()
-    return [term for term in terms if term in lowered]
+    matches: list[str] = []
+    for term in terms:
+        pattern = r"(?<!\w)" + re.escape(term.lower()) + r"(?!\w)"
+        if re.search(pattern, lowered):
+            matches.append(term)
+    return matches
 
 
 def classify_action(action: str, policy: MicroECFPolicyPack) -> dict[str, Any]:
@@ -292,6 +298,7 @@ def build_execute_payload(
 ) -> dict[str, Any]:
     """Build an Agoragentic execute payload carrying Micro ECF constraints."""
     decision = classify_action(action, policy)
+    can_execute = decision["decision"] == "allow"
     return {
         "task": task,
         "input": {
@@ -301,7 +308,7 @@ def build_execute_payload(
         },
         "constraints": {
             "max_cost": policy.boundary.max_cost_usd,
-            "prefer_execute": True,
+            "prefer_execute": can_execute,
             "require_match_before_execute": policy.boundary.require_match_before_execute,
             "preview_only": decision["decision"] != "allow" or not policy.boundary.live_spend_allowed,
         },

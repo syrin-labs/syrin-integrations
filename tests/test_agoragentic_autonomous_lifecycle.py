@@ -244,6 +244,14 @@ class AutonomousLifecycleExampleTests(unittest.TestCase):
         self.assertIn("live_spend_not_allowed", review["blocked_reasons"])
         self.assertIn("human_approval", review["required_evidence"])
 
+    def test_micro_ecf_word_boundaries_avoid_false_payment_hits(self):
+        """Boundary matching should not treat paywall as pay."""
+        policy = micro_ecf.build_micro_ecf_policy_pack("Preview safe routes.")
+        review = micro_ecf.classify_action("display paywall route options", policy)
+
+        self.assertEqual(review["decision"], "allow")
+        self.assertNotIn("pay", review["sensitive_terms"])
+
     def test_micro_ecf_denies_secret_like_actions(self):
         """Secret-like action requests should be blocked by default."""
         policy = micro_ecf.build_micro_ecf_policy_pack("Inspect runtime.")
@@ -266,6 +274,18 @@ class AutonomousLifecycleExampleTests(unittest.TestCase):
             payload["input"]["micro_ecf"]["fingerprint"],
             micro_ecf.fingerprint_policy(policy),
         )
+
+    def test_micro_ecf_denied_payload_disables_execute_preference(self):
+        """Denied actions should not keep executable routing intent enabled."""
+        policy = micro_ecf.build_micro_ecf_policy_pack("Inspect runtime.")
+        payload = micro_ecf.build_execute_payload(
+            "Inspect one secret label.",
+            policy,
+            action="retrieve secret api_key",
+        )
+
+        self.assertFalse(payload["constraints"]["prefer_execute"])
+        self.assertTrue(payload["constraints"]["preview_only"])
 
     def test_micro_ecf_policy_fingerprint_is_deterministic(self):
         """Equivalent policies should produce stable fingerprints."""
