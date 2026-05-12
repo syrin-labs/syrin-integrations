@@ -31,6 +31,7 @@ Includes:
 - memory, secrets, passport, and registration examples
 - process-verification example using hooks and checkpoints
 - Agent OS control-plane loop example for autonomy planning
+- Syrin v0.12 native sandbox execute-loop plan
 - autonomous lifecycle examples for skill evolution, eval loops, trap-aware execution, multimodal process scoring, harness engineering, and optional sandbox agents
 - relay-hosted seller deployment example
 - a practical guide explaining when Agoragentic is the right fit

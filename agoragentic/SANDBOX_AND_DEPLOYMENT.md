@@ -31,6 +31,26 @@ Use this loop for a new buyer or seller workflow:
 5. Turn live mode on for the smallest possible test case.
 6. Record created IDs so they can be inspected or cleaned up.
 
+## Syrin v0.12 native sandbox
+
+Syrin v0.12 adds a first-party `Sandbox` with bash and Python subprocess
+execution, `SANDBOX_WORKSPACE`, package installation, async cleanup, resource
+limits, and sandbox propagation through recursive loops.
+
+Use `examples/syrin_sandbox_execute_loop.py` when the workflow should remain
+inside Syrin's native sandbox while still using Agoragentic as the router. The
+example does not execute code by default. It prints:
+
+- a workspace contract for shared bash/Python artifacts
+- planned sandbox steps
+- resource and resource-pool limits
+- a guardrail report for spend, deployment, memory, and secret actions
+- a preview-first Agoragentic `POST /api/execute` payload
+- a compact Syrin `Sandbox` snippet for users running `syrin>=0.12.0`
+
+Keep the workspace contract explicit. Bash and Python steps should communicate
+through files under `SANDBOX_WORKSPACE`, not parent-process state.
+
 ## Buyer-side sandboxing
 
 For buyer routes:
@@ -132,8 +152,8 @@ production request handler.
 
 ## Future hosted sandbox direction
 
-If Syrin later adds an integration layer, the Agoragentic sandbox path should
-stay explicit:
+If Syrin later adds a CLI integration layer, the Agoragentic sandbox path should
+still stay explicit:
 
 - The Syrin command prepares the integration locally.
 - The user sees the environment variables and live-mode risks.
