@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 STARTER_KITS = ROOT / "agoragentic" / "starter_kits"
 HOSTED_KIT = STARTER_KITS / "hosted_syrin_agent"
 PLATFORM_HOSTED_KIT = STARTER_KITS / "platform_hosted_syrin_agent"
+AGENT_OS_EXPORT_KIT = STARTER_KITS / "syrin_agent_os_export"
 CONFIG_PATH = HOSTED_KIT / "config.py"
 
 
@@ -138,6 +139,21 @@ class AgoragenticStarterKitTests(unittest.TestCase):
             with self.subTest(filename=filename):
                 self.assertTrue((PLATFORM_HOSTED_KIT / filename).exists(), msg=f"missing {filename}")
 
+    def test_agent_os_export_kit_files_exist(self):
+        """The Agent OS export kit should ship the expected manifest and workflow assets."""
+        required_files = (
+            "__init__.py",
+            "README.md",
+            "acceptance_checklist.py",
+            "agent_os_prompt.py",
+            "deployment_flow.py",
+            "export_manifest.py",
+        )
+
+        for filename in required_files:
+            with self.subTest(filename=filename):
+                self.assertTrue((AGENT_OS_EXPORT_KIT / filename).exists(), msg=f"missing {filename}")
+
     def test_docs_reference_the_hosted_starter_kit(self):
         """Top-level docs should point users toward the deployable starter kit."""
         root_readme = (ROOT / "README.md").read_text(encoding="utf-8")
@@ -147,15 +163,19 @@ class AgoragenticStarterKitTests(unittest.TestCase):
 
         self.assertIn("deployable hosted agent starter kit", root_readme)
         self.assertIn("platform-hosted starter kit", root_readme)
+        self.assertIn("Syrin Agent OS export kit", root_readme)
         self.assertIn("starter_kits/hosted_syrin_agent/README.md", integration_readme)
         self.assertIn("starter_kits/platform_hosted_syrin_agent/README.md", integration_readme)
+        self.assertIn("starter_kits/syrin_agent_os_export/README.md", integration_readme)
         self.assertIn("AGENT_LIGHTNING_BRIDGE.md", integration_readme)
         self.assertIn("control plane", integration_readme)
         self.assertIn("hosted_syrin_agent", starter_index)
         self.assertIn("platform_hosted_syrin_agent", starter_index)
+        self.assertIn("syrin_agent_os_export", starter_index)
         self.assertIn("Agent Lightning-compatible", starter_index)
         self.assertIn("launch_request.py", deployment_guide)
         self.assertIn("smoke_test.py", deployment_guide)
+        self.assertIn("deployment_flow.py", deployment_guide)
 
 
 if __name__ == "__main__":

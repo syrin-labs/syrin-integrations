@@ -15,12 +15,15 @@ Each integration lives in its own top-level directory and should include:
 
 Agoragentic as the execution and deployment plane for Syrin.
 
+Boundary: this repository contains Syrin adapters, examples, export kits, and starter workflows. It does not contain the hosted Triptych OS / Agent OS control plane, Router / Marketplace ranking, x402/USDC settlement, receipts, trust mutation, reconciliation, or private Full ECF internals. Syrin agents call those hosted Agoragentic services over public APIs when an owner authorizes them.
+
 Includes:
 
 - a 27-tool Syrin adapter surface
 - starter agent example
 - deployable hosted agent starter kit with Docker and smoke tests
 - preview-first platform-hosted starter kit with reviewed execution and provider contracts
+- unified Syrin Agent OS export kit for self-hosted, platform-hosted, or hybrid deployments
 - control-plane-aligned docs that fit Syrin Nexus, Syrin CLI, and Syrin Python
 - Agent Lightning-compatible export bridge and Agent OS implementation prompt
 - public marketplace browse example
@@ -31,6 +34,7 @@ Includes:
 - memory, secrets, passport, and registration examples
 - process-verification example using hooks and checkpoints
 - Agent OS control-plane loop example for autonomy planning
+- Syrin v0.12 native sandbox execute-loop plan
 - autonomous lifecycle examples for skill evolution, eval loops, trap-aware execution, multimodal process scoring, harness engineering, and optional sandbox agents
 - relay-hosted seller deployment example
 - a practical guide explaining when Agoragentic is the right fit
@@ -40,6 +44,7 @@ Includes:
 Start with [agoragentic/README.md](agoragentic/README.md), then use
 [agoragentic/examples/README.md](agoragentic/examples/README.md),
 [agoragentic/starter_kits/README.md](agoragentic/starter_kits/README.md),
+[agoragentic/starter_kits/syrin_agent_os_export/README.md](agoragentic/starter_kits/syrin_agent_os_export/README.md),
 [agoragentic/WHY_AGORAGENTIC.md](agoragentic/WHY_AGORAGENTIC.md), and
 [agoragentic/RECIPES.md](agoragentic/RECIPES.md) for deeper workflow guidance.
 Use [agoragentic/NATIVE_ROADMAP.md](agoragentic/NATIVE_ROADMAP.md) to track

@@ -22,6 +22,7 @@ contracts, and marketplace surfaces.
 | Workflow native | Buyer, seller, memory, identity, multimodal, sandbox, and relay flows are documented and runnable | In progress |
 | Schema native | Workflow payloads have stable contracts and validation guidance | In progress |
 | Lifecycle native | Agents can run measurable skill, eval, trap-aware, multimodal, and harness loops in preview mode | In progress |
+| Export native | Users can generate a self-hosted, platform-hosted, or hybrid Agent OS deployment contract | In progress |
 | Core native | Syrin has a first-class integration path such as `syrin integrate agoragentic` | Future maintainer decision |
 
 ## Phase 1: Official third-party native
@@ -153,7 +154,33 @@ Maintainer ask:
 - Treat these as proving-ground examples, not core Syrin behavior yet.
 - Promote the patterns that users actually run safely.
 
-## Phase 6: Core Syrin native
+## Phase 6: Agent OS export native
+
+Goal: package the integration into a concrete deployment contract for users who
+want provisioned Syrin agents with Agoragentic execution, Micro ECF controls,
+sandbox smoke tests, swarm routing, receipts, and rollback.
+
+Acceptance criteria:
+
+- `starter_kits/syrin_agent_os_export/` builds an export manifest for
+  self-hosted, platform-hosted, or hybrid deployments.
+- The deployment workflow keeps preview, policy review, sandbox smoke, swarm
+  preview, hosted preview, operator acceptance, and live enablement as separate
+  phases.
+- The platform-hosted preview payload targets `POST /api/hosting/agent-os/preview`
+  with no live effects.
+- The acceptance checklist covers compile, tests, Micro ECF, sandbox, swarm,
+  smoke, receipts, reconciliation, and rollback.
+- The Agent OS prompt keeps Syrin as the control plane and Agoragentic as the
+  execution/deployment/marketplace plane.
+
+Maintainer ask:
+
+- Treat this as the packaged external contract users can try now.
+- Keep any Syrin core CLI hook maintainer-gated until this export kit gets
+  usage feedback.
+
+## Phase 7: Core Syrin native
 
 Goal: propose a Syrin-managed integration flow after the third-party integration
 has enough real usage.

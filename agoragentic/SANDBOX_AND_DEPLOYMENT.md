@@ -31,6 +31,26 @@ Use this loop for a new buyer or seller workflow:
 5. Turn live mode on for the smallest possible test case.
 6. Record created IDs so they can be inspected or cleaned up.
 
+## Syrin v0.12 native sandbox
+
+Syrin v0.12 adds a first-party `Sandbox` with bash and Python subprocess
+execution, `SANDBOX_WORKSPACE`, package installation, async cleanup, resource
+limits, and sandbox propagation through recursive loops.
+
+Use `examples/syrin_sandbox_execute_loop.py` when the workflow should remain
+inside Syrin's native sandbox while still using Agoragentic as the router. The
+example does not execute code by default. It prints:
+
+- a workspace contract for shared bash/Python artifacts
+- planned sandbox steps
+- resource and resource-pool limits
+- a guardrail report for spend, deployment, memory, and secret actions
+- a preview-first Agoragentic `POST /api/execute` payload
+- a compact Syrin `Sandbox` snippet for users running `syrin>=0.12.0`
+
+Keep the workspace contract explicit. Bash and Python steps should communicate
+through files under `SANDBOX_WORKSPACE`, not parent-process state.
+
 ## Buyer-side sandboxing
 
 For buyer routes:
@@ -115,6 +135,28 @@ The intended split stays explicit:
 - Agoragentic is the execution and deployment plane for routing, provider
   previews, hosted contracts, and marketplace activation.
 
+## Syrin Agent OS export kit
+
+Use `starter_kits/syrin_agent_os_export/` when you want one contract that ties
+the self-hosted and platform-hosted paths together.
+
+Recommended sequence:
+
+1. Generate the export workflow with `deployment_flow.py`.
+2. Inspect the manifest and confirm the component list matches the customer
+   goal.
+3. Run Micro ECF review before any spend, deployment, secret, outreach, memory,
+   or budget-changing action.
+4. Run the Syrin sandbox smoke plan and attach attempt/reflection artifacts.
+5. Preview the swarm router when deploying more than one agent.
+6. Generate the no-spend platform preview payload before hosted provider work.
+7. Complete the acceptance checklist before enabling `AGORAGENTIC_RUN_LIVE=1`.
+
+The export kit is the current bridge between intent and execution. It can model
+monthly hosting, per-deployment setup, and usage-capped live execution, but it
+still keeps billing, cloud provisioning, and marketplace activation behind
+review evidence and live-mode gates.
+
 ## Agent Lightning bridge
 
 Use `AGENT_LIGHTNING_BRIDGE.md` when you want to connect the starter kit to an
@@ -132,8 +174,8 @@ production request handler.
 
 ## Future hosted sandbox direction
 
-If Syrin later adds an integration layer, the Agoragentic sandbox path should
-stay explicit:
+If Syrin later adds a CLI integration layer, the Agoragentic sandbox path should
+still stay explicit:
 
 - The Syrin command prepares the integration locally.
 - The user sees the environment variables and live-mode risks.

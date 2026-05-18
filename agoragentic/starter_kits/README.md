@@ -11,8 +11,27 @@ Use a starter kit when you want:
 - Docker, smoke-test assets, or hosted provider previews
 - a clearer path from local development to self-hosted or platform-hosted deployment
 - a clean split between Syrin control-plane responsibilities and Agoragentic execution-plane responsibilities
+- a unified Agent OS export contract for shipping self-hosted, platform-hosted,
+  or hybrid Syrin agents
 
 ## Available starter kits
+
+### `syrin_agent_os_export/`
+
+A unified export kit that composes the current Agoragentic x Syrin pieces into
+one operator-facing deployment contract.
+
+Includes:
+
+- export manifest builder for self-hosted, platform-hosted, or hybrid agents
+- canonical deployment workflow with preview-first phases
+- no-spend platform preview payload for `POST /api/hosting/agent-os/preview`
+- acceptance checklist for compile, tests, Micro ECF, sandbox, swarm, receipts,
+  reconciliation, and rollback
+- copy-paste Agent OS implementation prompt
+- maintainer-gated future core integration note for `syrin integrate agoragentic`
+
+Start with [syrin_agent_os_export/README.md](syrin_agent_os_export/README.md).
 
 ### `hosted_syrin_agent/`
 
